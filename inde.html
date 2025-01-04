@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Sheet Data Fetch Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f4f4f4;
+    }
+  </style>
+</head>
+<body>
+  <h1>Google Sheet Data Fetch Test</h1>
+  <p>If everything is set up correctly, the data from your Google Sheet will display below:</p>
+  <table id="data-table">
+    <thead>
+      <tr id="table-header"></tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <script>
+    // Your published Google Sheet CSV link
+    const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTgSfiYUJz8LD50TmOuycEprrUE_5loqkR3kJ27cxbZFtZg-BiuNffbRM__lYhwJj9xCEFW6jxkSPjI/pub?output=csv';
+
+    async function fetchSheetData() {
+      try {
+        const response = await fetch(sheetUrl);
+        const csvText = await response.text();
+        
+        // Split rows and columns
+        const rows = csvText.split('\n').map(row => row.split(','));
+        
+        // Display data in a table
+        displayData(rows);
+      } catch (error) {
+        console.error('Error fetching Google Sheet data:', error);
+        document.body.innerHTML = `<p style="color: red;">Failed to fetch data. Please check the link.</p>`;
+      }
+    }
+
+    function displayData(rows) {
+      const tableHeader = document.getElementById('table-header');
+      const tableBody = document.getElementById('table-body');
+
+      // Clear existing data
+      tableHeader.innerHTML = '';
+      tableBody.innerHTML = '';
+
+      // Add header row
+      const headerRow = rows[0];
+      headerRow.forEach(header => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        tableHeader.appendChild(th);
+      });
+
+      // Add data rows
+      rows.slice(1).forEach(row => {
+        const tr = document.createElement('tr');
+        row.forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          tr.appendChild(td);
+        });
+        tableBody.appendChild(tr);
+      });
+    }
+
+    // Fetch data on page load
+    fetchSheetData();
+  </script>
+</body>
+</html>
